@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora PHP</title>
+    <link rel="stylesheet" type="text/css" href="estilo.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        function obterResultado()
+        {
+            
+            $.post('calc.php', { txtNum1: $("#txtNum1").val(), txtNum2: $("#txtNum2").val(), sOperacao: $("#sOperacao").val() }, function(response) {
+                $("#txtResult").val(response);
+            });
+        }
+    </script>
+</head>
+<body>
+    <div id="divVal1">
+    <label for="txtNum1">1º Valor:</label><br /><input type="number" id="txtNum1" name="txtNum1" />
+    </div>
+    <div id="divOp">
+        <select id="sOperacao" name="sOperacao">
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+        </select>
+    </div>
+    <div id="divVal2">
+        <label for="txtNum2">2º Valor:</label><br /><input type="number" id="txtNum2" name="txtNum2" />   
+    </div>
+    <div id="divBtnCalc">
+        <input type="button" id="btnCalc" value="Calcular" onclick="obterResultado();" />
+    </div>
+    <br />
+    <div id="divResult">
+        <label for="txtResult">Resultado:</label><br /><input type="text" id="txtResult" name="txtResult" />
+    </div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+body 
+{
+	font-family: Calibri, Verdana, Tahoma;
+	font-size: larger;
+}
+
+button
+{
+	font-size: large;
+    text-align: center;
+    width: 250px;
+    height: 50px;
+}
+
+label
+{
+    font-weight: bold;
+}
+
+span
+{
+    font-size: 50pt;
+    text-align: center;
+    line-height: 200px;
+}
+
+input[type=number], input[type=button]
+{
+    width: 100px;
+    min-height: 70px;
+    font-size: larger;
+    text-align: center;
+}
+
+input[type=text]
+{
+    font-size: large;
+    width: 267px;
+    min-height: 100px;
+    text-align: center;
+}
+
+div
+{
+    display: inline-block;
+    background-color: aqua;
+}
+
+select
+{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-indent: 1px;
+    text-overflow: '';
+    width: 50px;
+    font-size: larger;
+    text-align: center;
+    text-align-last: center; 
+}
+
+#divResult
+{
+    clear: both;
+    background-color: red;
+}
