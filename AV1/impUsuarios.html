@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Importar Usuários</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css/estilo.css'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+</head>
+<body>
+    <h2 id="titulo">Importar Usuários</h2>
+    <br /><br />
+    <center>
+    <div style="border: 1px; border-style: solid; display: block; margin-left: auto;margin-right: auto; width: 75%;">
+        O arquivo deverá estar no formato CSV com o seguinte layout:
+        <br />
+        <div style="border: 1px; border-style: solid; display: block; font-family: 'Courier New', Courier, monospace; width: 50%; margin-left: auto;margin-right: auto;">
+            id;nome;email;senha;tipo;perfil<br />
+            id;nome;email;senha;tipo;perfil<br />
+            id;nome;email;senha;tipo;perfil<br />
+        </div>
+        O <strong>id</strong> deverá ser 0 para novos registros (cujos ids serão gerados automaticamente), caso esteja preenchido com algo diferente de 0, o registro correspondente terá seus valores substituídos pelos valores preenchidos. O <strong>tipo</strong> deve ser 1 para <strong>comum</strong> ou 2 para <strong>admin</strong>. O <strong>perfil</strong> deve ser 1 para <strong>Administrativo</strong>, 2 para <strong>Aluno</strong> ou 3 para <strong>Professor</strong>.<br />
+        Exemplo:
+        <div style="border: 1px; border-style: solid; display: block; font-family: 'Courier New', Courier, monospace; width: 50%; margin-left: auto;margin-right: auto;">
+            0;Fulano Ciclano;fulano@ciclano.com.br;1;1<br />
+            0;André Neves;profandre@neves.com.br;2;3<br />
+            0;Joãozinho;joazinho@gmail.com;1;2;<br />
+        </div>
+    </div>
+    <br />
+    </center>
+    <form enctype="multipart/form-data" action="impUsuarios.php" method="POST" style="width: 50%;">
+        <!-- MAX_FILE_SIZE deve preceder o campo input -->
+        <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
+        <!-- O Nome do elemento input determina o nome da array $_FILES -->
+        Enviar arquivo para importação:<br />
+        <input name="inputArq" type="file" style="float: left;" />
+        <input type="submit" name="inpSubmit" id="inpSubmit" hidden />
+   
+        <button id="btnAdd" class="btn btn-secondary" style="float: right;" onclick="$('#inpSubmit').trigger('click');">
+            <i class="fa fa-upload"></i> Enviar
+        </button>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</body>
+</html>

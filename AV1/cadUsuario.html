@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Cadastrar Usuário</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css/estilo.css'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <script type="text/javascript">
+    (function($) {
+        $.QueryString = (function(paramsArray) {
+                let params = {};
+
+                for (let i = 0; i < paramsArray.length; ++i)
+                {
+                    let param = paramsArray[i]
+                        .split('=', 2);
+                    
+                    if (param.length !== 2)
+                        continue;
+                    
+                    params[param[0]] = decodeURIComponent(param[1].replace(/\+/g, " "));
+                }
+                    
+                return params;
+            })(window.location.search.substr(1).split('&'))
+        })(jQuery);
+
+        $(document).ready(function()
+        {
+            var vId = $.QueryString.id;
+
+            if (vId!=null)
+            {
+                $.getJSON( "obterUsuarios.php?vId=" + vId, function( data ) {
+                    var items = [];
+                    $.each( data, function( key, val ) {
+                        $("#txtId").val(val["id"]);
+                        $("#txtNome").val(val["nome"]);
+                        $("#txtEmail").val(val["email"]);
+                        $("#txtSenha").val(val["senha"]);
+                        $("#selTipo").val(val["tipo"]);
+                        $("#selPerfil").val(val["perfil"]);
+
+                        $("#titulo").html("Alterar Usuário");
+                        $("#btnCadastrar").text("Alterar");
+                    });
+                });
+
+            //});
+            }
+        });
+    </script>
+</head>
+<body>
+    <h2 id="titulo">Cadastrar Usuário</h2>
+    <br /><br />
+    <form class="row gx-2 gy-3 align-items-center" id="formDisc" name="formDisc" action="cadUsuario.php" method="POST">
+        <div class="col-sm-1">
+            <label class="visually-hidden" for="txtId">Id</label>
+            <input type="text" class="form-control" id="txtId" name="txtId" placeholder="id" readonly>
+        </div>
+        <div class="col-auto">
+            <label class="visually-hidden" for="txtNome">Nome</label>
+            <div class="input-group">
+            <div class="input-group-text">Nome:</div>
+            <input type="text" class="form-control" id="txtNome" name="txtNome" placeholder="Nome do usuário">
+            </div>
+        </div>
+        <div class="col-auto">
+            <label class="visually-hidden" for="txtEmail">Email</label>
+            <div class="input-group">
+            <div class="input-group-text">@</div>
+            <input type="text" class="form-control" id="txtEmail" name="txtEmail" placeholder="Email do usuário">
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <label class="visually-hidden" for="txtSenha">Senha</label>
+            <div class="input-group">
+            <div class="input-group-text">Senha:</div>
+            <input type="password" class="form-control" id="txtSenha" name="txtSenha" placeholder="Senha do usuário">
+            </div>
+        </div>
+        <div class="col-auto">
+            <label class="visually-hidden" for="selTipo">Tipo</label>
+            <select class="form-select" id="selTipo" name="selTipo">
+                <option selected>Tipo?</option>
+                <option value="1">Comum</option>
+                <option value="2">Admin</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="visually-hidden" for="selPerfil">Perfil</label>
+            <select class="form-select" id="selPerfil" name="selPerfil">
+                <option selected>Perfil?</option>
+                <option value="1">Administrativo</option>
+                <option value="2">Aluno</option>
+                <option value="3">Professor</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-secondary" id="btnCadastrar">Cadastrar</button>
+        </div>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</body>
+</html>
