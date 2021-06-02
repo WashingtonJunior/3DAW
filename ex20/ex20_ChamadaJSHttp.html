@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        function carregarUFs() {
+            let xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.responseText);
+
+                    var estados = JSON.parse(this.responseText);
+                    var states = document.getElementById("estados");
+
+                    for (estado of estados)
+                    {
+                        var op = new Option(estado.uf, estado.id);
+
+                        states.options.add(op);
+                    }
+
+                    carregarCidades(states.value);
+                }
+            }
+            xmlHttp.open("GET", "http://localhost/3DAW/ex20/ex20_GetEstados.php", true);
+            xmlHttp.send();
+            console.log("requisição enviada");
+        }
+
+        function carregarCidades(codUF) {
+            console.log(codUF);
+            if (codUF.length > 0) {
+                let xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        console.log(this.responseText);
+                        var cidades = JSON.parse(this.responseText);
+                        var cities = document.getElementById("cidades");
+                    
+                        cities.length = 0;
+
+                        for (cidade of cidades)
+                        {
+                            var op = new Option(cidade.nome, cidade.id);
+
+                            cities.options.add(op);
+                        }
+                    }
+                }
+                xmlHttp.open("GET", "http://localhost/3DAW/ex20/ex20_GetCidades.php?estado=" + codUF, true);
+                xmlHttp.send();
+                console.log("requisição enviada");
+            }
+        }
+    </script>
+</head>
+<body>
+<form action="">
+    <select id="estados" style="width: 100px;" onchange="carregarCidades(this.value)">
+    </select>
+
+    <select id="cidades">
+    </select>
+    <br>
+
+    <input type="submit" value="Enviar">
+
+    <script>
+        carregarUFs();
+    </script>
+</form>
+
+</body>
+</html>
