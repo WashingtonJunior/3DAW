@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ex 21 Inserir Aluno</title>
+    <script>
+        function mostraInfo(strUF) {
+            console.log(strUF);
+            if (strUF.length > 0) {
+                let xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function() {
+                    console.log("ReadyState: " + this.readyState);
+                    if (this.readyState == 4 && this.status == 200) {
+                        let obj = JSON.parse(this.responseText);
+                        let cities = document.getElementById("cidades");
+                         for (i=0;i<obj.length;i++) {
+                            //console.log("cidade: " + obj[0]['id']);
+                            let city = new Option(obj[i]['nome'], obj[i]['id']);
+                            cities.options.add(city);
+                        }
+                    }
+                }
+                xmlHttp.open("GET", "http://localhost/3DAW/ex20a/ex20_GetCidades.php?estado=" + strUF, true);
+                xmlHttp.send();
+                console.log("requisição enviada");
+            }
+        }
+
+        function carregarAluno(strCPF) {
+            console.log(strCPF);
+            if (strCPF.length > 0) {
+                let xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function() {
+                    console.log("ReadyState: " + this.readyState);
+                    if (this.readyState == 4 && this.status == 200) {
+                        let obj = JSON.parse(this.responseText);
+                        console.log(this.responseText);
+
+                        if (obj.length==0)
+                        {
+                            document.getElementById("nome").value = "";
+                            document.getElementById("email").value = "";
+                            document.getElementById("matricula").value = "";
+                            document.getElementById("uf").value = "";
+                            document.getElementById("cidades").length = 0;
+                        }
+                        else
+                        {
+                            for (i=0;i<obj.length;i++) {
+                                console.log("nome: " + obj[i]['nome']);
+                                document.getElementById("nome").value = obj[i]['nome'];
+                                document.getElementById("email").value = obj[i]['email'];
+                                document.getElementById("matricula").value = obj[i]['matricula'];
+                                document.getElementById("uf").value = obj[i]['uf'];
+                                mostraInfo(document.getElementById("uf").value);
+                                var strCidade = obj[i]['cidade'];
+
+                                setTimeout( function() {
+                                    for (let op of document.getElementById("cidades").options)
+                                    {
+                                        if (op.text==strCidade)
+                                        {
+                                            op.selected = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                , 2000);
+                            }
+
+                        }
+                    }
+                }
+                xmlHttp.open("GET", "http://localhost/3DAW/ex21/ex21_GetAluno.php?cpf=" + strCPF, true);
+                xmlHttp.send();
+                console.log("requisição enviada");
+            }
+        }
+
+        function alterarAluno() {
+            let objAluno = document.getElementById("formAluno");
+            let msg = validarAluno(objAluno);
+            if (msg == "") {
+                let xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        //let obj = JSON.parse(this.responseText);
+                        document.getElementById("resposta").innerHTML = this.responseText;  //obj.value;
+                    }
+                }
+                xmlHttp.open("GET", "http://localhost/3DAW/ex21/ex21_AlterarAluno.php?nome=" + objAluno.nome.value +
+                            "&email=" + objAluno.email.value + "&cpf=" + objAluno.cpf.value + "&matricula=" +
+                            objAluno.matricula.value + "&uf=" + objAluno.uf.value + "&cidade=Rio de Janeiro", true);
+                xmlHttp.send();
+                console.log("requisição enviada");
+            }
+            document.getElementById("resposta").innerHTML = msg;
+        }
+        function validarAluno(fAluno) {
+            let objValidForm = document.getElementById("formAluno");
+            let nome = objValidForm.nome.value;
+            let cpf = objValidForm.cpf.value;
+            let email = objValidForm.email.value;
+            let uf = objValidForm.uf.value;
+            let rg = "^(\S+)@(\S+)\.(\S+)$";
+            let msg2 = "";
+            if (!testaEmail(email)) {
+                msg2 = msg2 + "Email Invalido. <br>";
+                alert(msg2);
+            }
+            if (nome ===""){
+                msg2 = "Preencha o campo nome. <br>";
+                alert(msg2);
+            }
+            if (!TestaCPF(cpf)) {
+                msg2 = msg2 + "CPF Invalido. <br>";
+                alert(msg2);
+            }
+            if (validaUF(uf) == 1) {
+                msg2 = msg2 + "UF Invalida. <br>";
+                alert(msg2);
+            }
+            return msg2;
+        }
+        function testaEmail(strEmail) {
+            let rg = "^(\S+)@(\S+)\.(\S+)$";
+            let rg2 = /\S+@\S+\.\S+/;
+            return rg2.test(strEmail);
+            // if (rg.match(strEmail) != null) {
+            //     return true;
+            // }
+            // return false;
+        }
+        function validaUF(strUF) {
+            const estados = ["ES", "RJ", "RS", "AM", "MT", "BA", "CE", "MG", "SP", "RR"];
+            let errorUF = 1;
+            for (let i=0;i<10;i++) {
+                if (estados[i] == strUF) {
+                    console.log("encontrei estado " + strUF);
+                    errorUF=0;
+                    i=10;
+                }
+            }
+            return errorUF;
+        }
+        function TestaCPF(strCPF) {
+            var Soma;
+            var Resto;
+            Soma = 0;
+            if (strCPF == "00000000000") return false;
+
+            for (i=1; i<=9; i++) Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (11 - i);
+            Resto = (Soma * 10) % 11;
+
+            if ((Resto == 10) || (Resto == 11))  Resto = 0;
+            if (Resto != parseInt(strCPF.substring(9, 10)) ) return false;
+
+            Soma = 0;
+            for (i = 1; i <= 10; i++) Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (12 - i);
+            Resto = (Soma * 10) % 11;
+
+            if ((Resto == 10) || (Resto == 11))  Resto = 0;
+            if (Resto != parseInt(strCPF.substring(10, 11) ) ) return false;
+            return true;
+        }
+    </script>
+</head>
+<body>
+<h3>Leitura DB</h3>
+<form action="" method="post" name="Aluno" id="formAluno">
+    CPF: <input type="text" name="cpf" id="cpf" onchange="carregarAluno(this.value)"> <br><br>
+    Nome: <input type="text" name="nome" id="nome"> <br><br>
+    Email: <input type="text" name="email" id="email"> <br><br>
+    Matricula: <input type="text" name="matricula" id="matricula"> <br><br>
+    Estado: <input type="text" id="uf" name="uf" onchange="mostraInfo(this.value)"> <br><br>
+    Cidade:  <select id="cidades"></select> <br><br>
+    <input type="button" name="op" value="Alterar Aluno" onclick="alterarAluno()">
+</form>
+<p id="resposta"></p>
+</body>
+</html>
