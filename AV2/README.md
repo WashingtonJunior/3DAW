@@ -1,1 +1,1 @@
-Uma versão ao vivo (live) está disponível pelo link: https://gsxbr.net/AV1_3DAW/
+Versões ao vivo (live) estão disponíveis pelo links: https://gsxbr.net/AV1_3DAW/ ou https://gsxbr.net/AV2_3DAW/ 
