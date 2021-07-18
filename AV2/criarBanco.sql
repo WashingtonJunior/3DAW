@@ -1,0 +1,3 @@
+CREATE DATABASE `av1_3daw`;
+CREATE TABLE `av1_3daw`.`disciplinas` ( `id` INT NOT NULL AUTO_INCREMENT , `nome` VARCHAR(50) NOT NULL , `periodo` INT NOT NULL , `idPreRequisito` INT NULL , `creditos` INT NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+CREATE TABLE `av1_3daw`.`usuarios` ( `id` INT NOT NULL AUTO_INCREMENT , `nome` VARCHAR(100) NOT NULL , `email` VARCHAR(70) NOT NULL , `senha` VARCHAR(100) NOT NULL , `tipo` INT NOT NULL , `perfil` INT NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;

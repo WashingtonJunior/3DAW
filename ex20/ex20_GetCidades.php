@@ -6,13 +6,14 @@
     $sql = "SELECT * FROM cidade WHERE estado=$estado;";
 
     $result = $conn->query($sql);
-
-    $rows = array();
-    while ($row = mysqli_fetch_assoc($result))
+	
+    $cidades = array();
+    while ($cidade = mysqli_fetch_assoc($result))
     {
-        $rows[] = $row;
+		print($cidade['nome']);
+        $cidades[] = $cidade;
     }
 
-    print json_encode($rows);
+    print json_encode($cidade);
 
 ?>

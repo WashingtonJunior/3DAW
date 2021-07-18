@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Cadastrar Produto</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css/estilo.css'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <script type="text/javascript">
+        (function($) {
+            $.QueryString = (function(paramsArray) {
+                    let params = {};
+
+                    for (let i = 0; i < paramsArray.length; ++i)
+                    {
+                        let param = paramsArray[i]
+                            .split('=', 2);
+                        
+                        if (param.length !== 2)
+                            continue;
+                        
+                        params[param[0]] = decodeURIComponent(param[1].replace(/\+/g, " "));
+                    }
+                        
+                    return params;
+                })(window.location.search.substr(1).split('&'))
+        })(jQuery);
+
+        function inserirProduto() {
+            let objProd = document.getElementById("formProduto");
+            //let msg = validarAluno(objAluno);
+            msg = "";
+
+            if (msg == "") {
+                let xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        //let obj = JSON.parse(this.responseText);
+                        document.getElementById("resposta").innerHTML = this.responseText;  //obj.value;
+
+                        window.location = 'listarProdutos.html';
+                    }
+                }
+
+                if ($('#formProduto')[0].checkValidity())
+                {
+                    camposvalores = "";
+                    for (const elemento of objProd)
+                    {
+                        if (elemento.name!='')
+                            if (elemento.name=="chkAtivo")
+                                camposvalores += elemento.name + "=" + elemento.checked + "&";
+                            else
+                                camposvalores += elemento.name + "=" + encodeURI(elemento.value) + "&";
+
+                    }
+    //                alert(camposvalores);
+
+                    xmlHttp.open("GET", "http://localhost/3DAW/AV2/cadProduto.php?" + camposvalores, true);
+                    xmlHttp.send();
+                    console.log("requisição enviada");
+                }
+                else
+                {
+                    $('#formProduto')[0].reportValidity();
+                }
+            }
+            else
+            {
+                document.getElementById("resposta").innerHTML = msg;
+            }
+        }
+
+        $(document).ready(function()
+        {
+            obterCategorias();
+            obterTipos();
+
+            var hoje = new Date();
+
+            let sData = hoje.toISOString().split('T')[0];
+
+            $("#txtDataInclusao").val(sData);
+
+            var vId = $.QueryString.id;
+
+            if (vId!=null)
+            {
+                //$.get('obterProdutos.php', { vId: vId }, function(response) {
+                //alert(response);
+
+                let xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        let obj = JSON.parse(this.responseText);
+//                        document.getElementById("resposta").innerHTML = this.responseText;  //obj.value;
+                        
+                        if (obj.length>0)
+                        {
+                            obj = obj[0];
+
+                            let frmProd = document.getElementById("formProduto");
+
+                            frmProd.txtId.value = obj.id;
+                            frmProd.txtNome.value = obj.nome;
+                            frmProd.txtCodBarra.value = obj.codbarra;
+                            frmProd.txtFabricante.value = obj.fabricante;
+                            frmProd.selCategoria.value = obj.categoria;
+                            frmProd.selTipo.value = obj.tipo;
+                            frmProd.txtPrecoVenda.value = obj.precovenda;
+                            frmProd.txtQtEstoque.value = obj.qtestoque;
+                            frmProd.txtPeso.value = obj.peso;
+                            frmProd.txtUrlImg.value = obj.url_img;
+                            frmProd.txtDataInclusao.value = obj.datainclusao;
+                            frmProd.chkAtivo.checked = (obj.ativo == "0" ? false : true);
+                            frmProd.txtDescricao.value = obj.descricao;
+
+                            $("#titulo").html("Alterar Produto");
+                            $("#btnCadastrar").text("Alterar");
+                        }
+                    }
+                }
+
+                xmlHttp.open("GET", "http://localhost/3DAW/AV2/obterProdutos.php?vId=" + vId, true);
+                xmlHttp.send();
+                console.log("requisição enviada");
+            }
+        });
+
+        function criarLinkImg()
+        {
+            let txtCodBarra = document.getElementById("txtCodBarra");
+            let txtUrlImg = document.getElementById("txtUrlImg");
+
+            if (txtUrlImg.value=="")
+            {
+                txtUrlImg.value = "img/" + txtCodBarra.value + ".jpg";
+            }
+        }
+
+        function obterCategorias()
+        {
+            let xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        let obj = JSON.parse(this.responseText);
+
+                        if (obj.length>0)
+                        {
+                            $.each( obj, function( key, val ) {
+                                $("#selCategoria").append(new Option(val['descricao'], val['id']));
+                            });
+
+                        }
+                    }
+                }
+
+                xmlHttp.open("GET", "http://localhost/3DAW/AV2/obterCategorias.php", true);
+                xmlHttp.send();
+                console.log("requisição enviada");
+
+            /* Seria mais prático com JQuery... ;)
+            $.getJSON( "obterCategorias.php", function( data ) {
+                $.each( data, function( key, val ) {
+                    $("#selCategoria").append(new Option(val['descricao'], val['id']));
+                });
+            });
+            */
+        }
+
+        function obterTipos()
+        {
+            let xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        let obj = JSON.parse(this.responseText);
+
+                        if (obj.length>0)
+                        {
+                            $.each( obj, function( key, val ) {
+                                $("#selTipo").append(new Option(val['descricao'], val['id']));
+                            });
+
+                        }
+                    }
+                }
+
+                xmlHttp.open("GET", "http://localhost/3DAW/AV2/obterTipos.php", true);
+                xmlHttp.send();
+                console.log("requisição enviada");
+        }
+
+    </script>
+</head>
+<body>
+    <h2 id="titulo">Cadastrar Produto</h2>
+    <br /><br />
+    <form class="row gx-2 gy-3 align-items-center needs-validation" id="formProduto" name="formProduto" novalidate>
+        <div class="col-sm-1">
+            <label class="visually-hidden" for="txtId">Id</label>
+            <input type="text" class="form-control" id="txtId" name="txtId" placeholder="id" readonly>
+        </div>
+        <div class="col-sm-3">
+            <label class="visually-hidden" for="txtCodBarra">Código de barra</label>
+            <div class="input-group has-validation">
+            <div class="input-group-text">Código de barra:</div>
+            <input type="text" onblur="javascript:criarLinkImg();" class="form-control" id="txtCodBarra" name="txtCodBarra" placeholder="Código de barras" required>
+            </div>
+        </div>
+        <div class="col-sm-7">
+            <label class="visually-hidden" for="txtNome">Nome</label>
+            <div class="input-group has-validation">
+                <div class="input-group-text">Nome:</div>
+                <input type="text" class="form-control" id="txtNome" name="txtNome" placeholder="Nome do Produto" required>
+                <div class="invalid-feedback">
+                    Por favor, digite um nome!
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <label class="visually-hidden" for="txtFabricante">Fabricante</label>
+            <div class="input-group">
+            <div class="input-group-text">Fabricante:</div>
+            <input type="text" class="form-control" id="txtFabricante" name="txtFabricante" placeholder="Nome do Fabricante">
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <label class="visually-hidden" for="selCategoria">Categoria</label>
+            <select class="form-select" id="selCategoria" name="selCategoria" placeholder="Categoria">
+                <option selected value=0>Sem Categoria</option>
+            </select>
+        </div>
+
+        <div class="col-sm-3">
+            <label class="visually-hidden" for="selTipo">Tipo</label>
+            <select class="form-select" id="selTipo" name="selTipo" placeholder="Tipo">
+                <option selected value=0>Sem Tipo</option>
+            </select>
+        </div>
+
+        <div class="col-sm-3">
+            <label class="visually-hidden" for="txtPrecoVenda">Preço de Venda</label>
+            <div class="input-group">
+            <div class="input-group-text">Preço de Venda:</div>
+            <input type="number" step="0.01" pattern="^\d+(?:\.\d{1,2})?$" class="form-control" id="txtPrecoVenda" name="txtPrecoVenda" placeholder="0.00">
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <label class="visually-hidden" for="txtQtEstoque">Qt em Estoque</label>
+            <div class="input-group">
+            <div class="input-group-text">Qt em Estoque:</div>
+            <input type="number" class="form-control" id="txtQtEstoque" name="txtQtEstoque" placeholder="0">
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <label class="visually-hidden" for="txtPeso">Peso (g)</label>
+            <div class="input-group">
+            <div class="input-group-text">Peso (g):</div>
+            <input type="number" class="form-control" id="txtPeso" name="txtPeso" placeholder="0">
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <label class="visually-hidden" for="txtUrlImg">URL Imagem</label>
+            <div class="input-group">
+            <div class="input-group-text">URL da imagem:</div>
+            <input type="text" class="form-control" id="txtUrlImg" name="txtUrlImg" placeholder="URL da imagem do produto">
+            </div>
+        </div>
+        <div class="col-auto">
+            <label class="visually-hidden" for="txtDataInclusao">Data de Inclusão</label>
+            <div class="input-group">
+            <div class="input-group-text">Data de Inclusão:</div>
+            <input type="date" class="form-control" id="txtDataInclusao" name="txtDataInclusao" placeholder="">
+            </div>
+        </div>
+        <div class="col-auto">
+            <label class="visually-hidden" for="chkAtivo">Ativo?</label>
+            <div class="input-group">
+            <div class="input-group-text">Ativo?</div>
+            <input type="checkbox" class="form-check-input" id="chkAtivo" name="chkAtivo" checked>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-11">
+                <label class="visually-hidden" for="txtDescricao">Descrição</label>
+                <div class="input-group">
+                <div class="input-group-text">Descrição:</div>
+                <textarea class="form-control" id="txtDescricao" name="txtDescricao" placeholder="Descrição do produto" rows="5" style="width: 50%;"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn btn-primary" id="btnCadastrar" onclick="javascript:inserirProduto();">Cadastrar</button>
+        </div>
+    </form>
+
+    <p id="resposta"></p>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</body>
+</html>

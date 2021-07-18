@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Listar Produtos</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css/estilo.css'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+
+    <script type="text/javascript">
+        function operateFormatter(value, row, index)
+        {
+            return [
+            '<a class="edit" href="javascript:void(0)" title="Editar">',
+            '<i class="fa fa-edit btn btn-primary"></i>',
+            '</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            '<a class="remove" href="javascript:void(0)" title="Remover">',
+            '<i class="fa fa-trash btn btn-primary"></i>',
+            '</a>'
+            ].join('');
+        }
+
+        function imageFormatter(value, row, index)
+        {
+            return ['<a class="show" href="javascript:void(0)" title="Mostrar">',
+                '<img style="width: 100px; height: 100px;" src="', value, '">',
+                '</a>'].join('');
+        }
+
+        window.imgEvents = {
+            'click .show': function (e, value, row, index) {
+                var img = document.createElement('img');
+                img.src = value;
+                document.getElementById('body').appendChild(img);
+                down.innerHTML = "Image Element Added."; 
+            }
+        }
+
+        window.operateEvents = {
+            'click .edit': function (e, value, row, index) {
+                //alert('You click like action, row: ' + JSON.stringify(row))
+                window.location.href = "cadProduto.html?id=" + row.id;
+            },
+            'click .remove': function (e, value, row, index) {
+                if (confirm("Deseja realmente apagar o registro " + row.id + "?"))
+                {
+                    $.post('delProduto.php', { Id: row.id }, function(response) {
+                        if (response=="1")
+                        {
+                            $('#tabelaProdutos').bootstrapTable('remove', {
+                                field: 'id',
+                                values: [row.id]
+                            })
+                        }
+                    });
+                }
+            }
+        }
+
+        function obterProdutos()
+        {
+            $.getJSON( "obterProdutos.php", function( mydata ) {
+                $('#tabelaProdutos').bootstrapTable({
+                    data: mydata, locale: "pt-BR", height: 550,
+
+                    columns: [
+                        [{field: "id"}, 
+                        {
+                            field: 'url_img',
+                            title: 'Imagem',
+                            align: 'center',
+                            clickToSelect: false,
+                            events: window.imgEvents,
+                            formatter: imageFormatter
+                        },
+                        {field: "codbarra"}, {field: "nome"}, {field: "catdesc"}, {field: "precovenda"}, {field: "qtestoque"}, 
+                        {
+                            field: 'operate',
+                            title: 'Operações',
+                            align: 'center',
+                            clickToSelect: false,
+                            events: window.operateEvents,
+                            formatter: operateFormatter
+                        }]
+                    ]
+                });
+            });
+        }
+
+        $(document).ready(function()
+        {
+            obterProdutos();
+        });
+    </script>
+</head>
+<body>
+    <h2>Listar Produtos</h2>
+
+    <div class="container">
+        <div id="toolbar">
+            <a href="cadProduto.html">
+            <button id="btnAdd" class="btn btn-primary">
+                <i class="fa fa-plus"></i> Adicionar
+            </button></a>
+        </div>
+
+        <table
+            id="tabelaProdutos"
+            data-height="480"
+            data-search="true"
+
+            >
+            <thead>
+                <tr>
+                    <th data-field="id">Id</th>
+                    <th data-field="url_img">Imagem</th>
+                    <th data-field="codbarra">Cód. Barras</th>
+                    <th data-field="nome">Nome</th>
+                    <th data-field="catdesc">Categoria</th>
+                    <th data-field="precovenda">Preço de Venda</th>
+                    <th data-field="qtestoque">Qt em Estoque</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+    <script src="js/bootstrap-table-pt-BR.js"></script>
+</body>
+</html>

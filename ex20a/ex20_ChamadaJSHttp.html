@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        function mostraInfo(strUF) {
+            console.log(strUF);
+            if (strUF.length > 0) {
+                let xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        document.getElementById("resposta").value = this.responseText;
+                        //alert(this.responseText);
+
+                        var objetos = JSON.parse(this.responseText);
+                        //alert(objetos);
+
+                        //alert(this.responseText);
+                        let cities = document.getElementById("cidades");
+
+                        cities.length = 0;
+
+                        for (cidade of objetos)
+                        {
+                            var op = new Option(cidade.nome, cidade.id);
+
+                            cities.options.add(op);
+                        }
+                    }
+                }
+                xmlHttp.open("GET", "http://localhost/3DAW/ex20a/ex20_GetCidades.php?estado=" + strUF, true);
+                xmlHttp.send();
+                console.log("requisição enviada");
+            }
+        }
+    </script>
+</head>
+<body>
+<form action="">
+    Diga seu Estado:
+    <input type="text" id="uf" name="uf" onchange="mostraInfo(this.value)">
+    <br>Resposta:
+    <input type="text" id="resposta" name="resposta">
+    <br>
+    <select id="cidades">
+
+    </select>
+    <br>
+    <input type="submit" value="Enviar">
+</form>
+
+</body>
+</html>
